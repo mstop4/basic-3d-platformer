@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour {
 
 	Rigidbody rb;
 
+	bool jumpPressed = false;
+
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
@@ -16,6 +18,8 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		
+		// Walking
 		float distance = walkSpeed * Time.deltaTime;
 		float hAxis = Input.GetAxis ("Horizontal");
 		float vAxis = Input.GetAxis ("Vertical");
@@ -24,5 +28,18 @@ public class PlayerController : MonoBehaviour {
 		Vector3 curPosition = transform.position;
 		Vector3 newPosition = curPosition + movement;
 		rb.MovePosition (newPosition);
+
+		// Jumping
+		float jAxis = Input.GetAxis("Jump");
+
+		if (jAxis > 0f) {
+			if (!jumpPressed) {
+				jumpPressed = true;
+				Vector3 jumpVector = new Vector3 (0f, jumpSpeed, 0f);
+				rb.velocity = rb.velocity + jumpVector;
+			}
+		} else {
+			jumpPressed = false;
+		}
 	}
 }
