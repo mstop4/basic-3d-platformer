@@ -8,12 +8,14 @@ public class PlayerController : MonoBehaviour {
 	public float jumpSpeed = 7f;
 
 	Rigidbody rb;
+	Collider coll;
 
 	bool jumpPressed = false;
 
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
+		coll = GetComponent<Collider> ();
 	}
 	
 	// Update is called once per frame
@@ -31,9 +33,10 @@ public class PlayerController : MonoBehaviour {
 
 		// Jumping
 		float jAxis = Input.GetAxis("Jump");
+		bool isGrounded = CheckGrounded ();
 
 		if (jAxis > 0f) {
-			if (!jumpPressed) {
+			if (!jumpPressed && isGrounded) {
 				jumpPressed = true;
 				Vector3 jumpVector = new Vector3 (0f, jumpSpeed, 0f);
 				rb.velocity = rb.velocity + jumpVector;
@@ -41,5 +44,24 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			jumpPressed = false;
 		}
+	}
+
+	bool CheckGrounded() {
+		float sizeX = coll.bounds.size.x;
+		float sizeY = coll.bounds.size.y;
+		float sizeZ = coll.bounds.size.z;
+
+		Vector3 corner1 = transform.position + new Vector3 (sizeX / 2, -sizeY / 2 + 0.01f, sizeZ / 2);
+		Vector3 corner2 = transform.position + new Vector3 (-sizeX / 2, -sizeY / 2 + 0.01f, sizeZ / 2);
+		Vector3 corner3 = transform.position + new Vector3 (sizeX / 2, -sizeY / 2 + 0.01f, -sizeZ / 2);
+		Vector3 corner4 = transform.position + new Vector3 (-sizeX / 2, -sizeY / 2 + 0.01f, -sizeZ / 2);
+	
+		bool grounded1 = Physics.Raycast (corner1, new Vector3 (0, -1, 0), 0.01f);
+		bool grounded2 = Physics.Raycast (corner2, new Vector3 (0, -1, 0), 0.01f);
+		bool grounded3 = Physics.Raycast (corner3, new Vector3 (0, -1, 0), 0.01f);
+		bool grounded4 = Physics.Raycast (corner4, new Vector3 (0, -1, 0), 0.01f);
+
+		return (grounded1 || grounded2 || grounded3 || grounded4);
+
 	}
 }
